@@ -1,3 +1,5 @@
+using Confluent.Kafka;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +9,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var producerConfig = new ProducerConfig
+{
+    BootstrapServers = builder.Configuration.GetValue<string>("KafkaProducerConfig:BootstrapServers")
+};
+
+builder.Services.AddSingleton(producerConfig); // Register Kafka producer configuration
+builder.Services.AddSingleton<IProducer<string, string>>(new ProducerBuilder<string, string>(producerConfig).Build());
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
