@@ -25,6 +25,9 @@ namespace PaymentService.Handlers
                 while (true)
                 {
                     var consumer = _consumer.Consume(cancelToken.Token);
+                    //Generate payment url
+                    // Talk to the bank or payment providers
+                    //Put payment url into payment topic
                     Console.WriteLine($"Message: {consumer.Message.Value} received from {consumer.TopicPartitionOffset}");
                 }
             }

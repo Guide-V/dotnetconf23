@@ -19,32 +19,26 @@ namespace VendingMachineService.Controllers
         }
 
         [HttpPost(Name = "OrderDrink")]
-        public IActionResult Post(DrinkOrder drinkOrderPTO)
+        public IActionResult Post(DrinkOrder drinkOrderDto)
         {
             var drinkOrder = new DrinkOrder
             {
-                Id = drinkOrderPTO.Id,
-                Price = drinkOrderPTO.Price,
+                Id = drinkOrderDto.Id,
+                Price = drinkOrderDto.Price,
                 CreatedDate = DateTime.Now,
-                HasStraw = drinkOrderPTO.HasStraw
+                HasStraw = drinkOrderDto.HasStraw
             };
 
-            //put order into Kafka topic: drink-order-topic
             try
             {
-
-                // Serialize the order as JSON (assuming you're using JSON)
                 var orderJson = JsonSerializer.Serialize(drinkOrder);
 
-                    // Produce the order message to the "drink-order-topic"
-                    _kafkaProducer.Produce("drink-order-topic", new Message<string, string>
-                    {
-                        Key = null, // You can specify a key if needed
-                        Value = orderJson
-                    });
-                
-
-                // Optionally, you can log or handle successful message production here
+                // Produce the order message to the "drink-order-topic"
+                _kafkaProducer.Produce("drink-order-topic", new Message<string, string>
+                {
+                    Key = null,
+                    Value = orderJson
+                });
 
                 return Ok(drinkOrder);
             }
@@ -55,7 +49,14 @@ namespace VendingMachineService.Controllers
                 _logger.LogError($"Error producing message: {ex.Error.Reason}");
                 return StatusCode(500, "Error producing message");
             }
+        }
 
+        [HttpGet]
+        public IActionResult GetPaymentUrl(int orderId)
+        {
+            //Search payment topic with orderId
+            //Return paymentUrl
+            return Ok();
         }
     }
 }
