@@ -20,27 +20,29 @@ namespace PaymentService.Controllers
 
             _consumer.Subscribe("drink-order-topic");
         }
-        
-        /*[HttpPost(Name = "GenerateQr")]
+
+        [HttpGet]
+        public IActionResult Get() 
+        {
+            return Ok("Controller is working!");
+        }
+
+        [HttpPost(Name = "GenerateQr")]
         public Task Post()
         {
             try
             {
                 while (true)
                 {
-                    var result = _consumer.Consume();
+                    var result = _consumer.Consume(_cancellationTokenSource.Token);
 
                     // Process the received message
                     var message = result.Message.Value;
 
                     // You can process the message here or pass it to a service for further processing
 
-                    // Return a response indicating the message was processed
-                    _logger.Log(LogLevel.Information, $"Received message: {message}");
                     Console.WriteLine($"Received message: {message}");
                 }
-
-                return Task.CompletedTask;
             }
             catch (Exception)
             {
@@ -50,7 +52,7 @@ namespace PaymentService.Controllers
             finally { _consumer.Close(); }
         }
 
-        [HttpPost("stop")]
+/*        [HttpPost("stop")]
         public IActionResult PostStop()
         {
             // Signal the cancellation to stop the consumer
@@ -60,7 +62,7 @@ namespace PaymentService.Controllers
             _consumer.Close();
 
             return Ok("Consumer stopping...");
-        }
-        */
+        }*/
+
     }
 }

@@ -18,7 +18,7 @@ var consumerConfig = new ConsumerConfig
 };
 builder.Services.AddSingleton(consumerConfig); // Register Kafka producer configuration
 builder.Services.AddSingleton<IConsumer<string, string>>(new ConsumerBuilder<string, string>(consumerConfig).Build());
-builder.Services.AddSingleton<IHostedService, OrderConsumerHandler>();
+builder.Services.AddHostedService<OrderConsumerHandler>();
 
 var app = builder.Build();
 
