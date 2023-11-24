@@ -1,20 +1,21 @@
 ﻿using Confluent.Kafka;
-using PaymentService.Controllers;
 
 namespace PaymentService.Handlers
 {
     public class OrderConsumerHandler : IHostedService
     {
-        private readonly ILogger<QrCodeController> _logger;
+        private readonly ILogger<OrderConsumerHandler> _logger;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IConsumer<string, string> _consumer;
+        private readonly IProducer<string, string> _producer;
 
-        public OrderConsumerHandler(ILogger<QrCodeController> logger, IConsumer<string, string> consumer)
+        public OrderConsumerHandler(ILogger<OrderConsumerHandler> logger, IConsumer<string, string> consumer, IProducer<string, string> producer)
         {
             _logger = logger;
             _cancellationTokenSource = new CancellationTokenSource();
             _consumer = consumer;
             _consumer.Subscribe("drink-order-topic");
+            _producer = producer;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -26,9 +27,19 @@ namespace PaymentService.Handlers
                 {
                     var consumer = _consumer.Consume(cancelToken.Token);
                     //Generate payment url
-                    // Talk to the bank or payment providers
+                    var paymentUrl = $"orderId: {consumer.Message.Value}, bank-url-or-qr-code";
+                    
                     //Put payment url into payment topic
-                    Console.WriteLine($"Message: {consumer.Message.Value} received from {consumer.TopicPartitionOffset}");
+                    _producer.Produce("payment-topic", new Message<string, string>
+                    {
+                        Key = null,
+                        Value = paymentUrl
+                    });
+
+                    //or put it in a db?
+                    //or whatever...
+
+                    Console.WriteLine($"Message: {consumer.Message.Value} received from {consumer.TopicPartitionOffset}, and created paymenturl {paymentUrl}");
                 }
             }
             catch (Exception)

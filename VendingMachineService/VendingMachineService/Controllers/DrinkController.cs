@@ -50,13 +50,5 @@ namespace VendingMachineService.Controllers
                 return StatusCode(500, "Error producing message");
             }
         }
-
-        [HttpGet]
-        public IActionResult GetPaymentUrl(int orderId)
-        {
-            //Search payment topic with orderId
-            //Return paymentUrl
-            return Ok();
-        }
     }
 }

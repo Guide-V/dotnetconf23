@@ -18,6 +18,15 @@ var consumerConfig = new ConsumerConfig
 };
 builder.Services.AddSingleton(consumerConfig); // Register Kafka producer configuration
 builder.Services.AddSingleton<IConsumer<string, string>>(new ConsumerBuilder<string, string>(consumerConfig).Build());
+
+var producerConfig = new ProducerConfig
+{
+    BootstrapServers = builder.Configuration.GetValue<string>("KafkaProducerConfig:BootstrapServers")
+};
+
+builder.Services.AddSingleton(producerConfig); // Register Kafka producer configuration
+builder.Services.AddSingleton<IProducer<string, string>>(new ProducerBuilder<string, string>(producerConfig).Build());
+
 builder.Services.AddHostedService<OrderConsumerHandler>();
 
 var app = builder.Build();
